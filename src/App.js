@@ -1,4 +1,3 @@
-import "./App.css";
 import { useState } from "react";
 import BakeryItem from "./components/BakeryItem";
 import bakeryData from "./assets/bakery-data.json";
