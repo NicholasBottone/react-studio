@@ -1,6 +1,8 @@
 import "./App.css";
 import { useState } from "react";
+import BakeryItem from "./components/BakeryItem";
 import bakeryData from "./assets/bakery-data.json";
+import { Container, Row, Col } from "react-bootstrap";
 
 /* ####### DO NOT TOUCH -- this makes the image URLs work ####### */
 bakeryData.forEach((item) => {
@@ -9,21 +11,78 @@ bakeryData.forEach((item) => {
 /* ############################################################## */
 
 function App() {
-  // TODO: use useState to create a state variable to hold the state of the cart
-  /* add your cart state code here */
+  const [cart, setCart] = useState({}); // { itemName: {quantity: 0, price: 0} }
+
+  const addToCart = (item) => {
+    const newCart = { ...cart };
+    if (newCart[item.name]) {
+      newCart[item.name].quantity++;
+    } else {
+      newCart[item.name] = { quantity: 1, price: item.price };
+    }
+    setCart(newCart);
+  };
 
   return (
     <div className="App">
-      <h1>My Bakery</h1> {/* TODO: personalize your bakery (if you want) */}
+      <Container>
+        <img
+          src="https://thedigestonline.com/wp-content/uploads/2014/05/carlos-bakery-logo-770x433.jpg"
+          alt="Carlos Bakery Logo"
+          className="d-flex mx-auto my-5"
+          style={{ height: "200px" }}
+        />
+      </Container>
 
-      {bakeryData.map((item, index) => ( // TODO: map bakeryData to BakeryItem components
-        <p>Bakery Item {index}</p> // replace with BakeryItem component
-      ))}
+      <Container>
+        <Row>
+          <Col xs={12} md={9}>
+            <Container fluid>
+              <Row
+                xs={1}
+                md={2}
+                lg={3}
+                className="g-4 d-flex align-items-stretch"
+              >
+                {bakeryData.map((item, index) => (
+                  <Col key={index}>
+                    <BakeryItem item={item} addToCart={() => addToCart(item)} />
+                  </Col>
+                ))}
+              </Row>
+            </Container>
+          </Col>
 
-      <div>
-        <h2>Cart</h2>
-        {/* TODO: render a list of items in the cart */}
-      </div>
+          <Col xs={12} md={3}>
+            <div>
+              <h2>Cart</h2>
+              <ul>
+                {Object.keys(cart).map((itemName) => (
+                  <li key={itemName}>
+                    {itemName} x {cart[itemName].quantity} @ $
+                    {cart[itemName].price} = $
+                    {Math.round(
+                      cart[itemName].quantity * cart[itemName].price * 100
+                    ) / 100}
+                  </li>
+                ))}
+              </ul>
+              <br />
+              <h5>
+                Total: $
+                {Object.keys(cart).reduce(
+                  (total, itemName) =>
+                    Math.round(
+                      (total + cart[itemName].quantity * cart[itemName].price) *
+                        100
+                    ) / 100,
+                  0
+                )}
+              </h5>
+            </div>
+          </Col>
+        </Row>
+      </Container>
     </div>
   );
 }
